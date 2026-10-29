@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Perfil FastDDS para imagenes grandes (/hk_camera/rgb, BGR8 1440x1080 = 4.6 MB/msg a 20 Hz).
+     Con los buffers por defecto (~208 KB) DDS pierde fragmentos y el suscriptor ve huecos de ~0.6 s
+     aunque el nodo publique a 20 Hz estables. -->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profile">
+  <transport_descriptors>
+    <transport_descriptor>
+      <transport_id>shm_large</transport_id>
+      <type>SHM</type>
+      <segment_size>20971520</segment_size>
+    </transport_descriptor>
+    <transport_descriptor>
+      <transport_id>udp_large</transport_id>
+      <type>UDPv4</type>
+      <sendBufferSize>10485760</sendBufferSize>
+      <receiveBufferSize>10485760</receiveBufferSize>
+    </transport_descriptor>
+  </transport_descriptors>
+  <participant profile_name="large_msgs" is_default_profile="true">
+    <rtps>
+      <userTransports>
+        <transport_id>shm_large</transport_id>
+        <transport_id>udp_large</transport_id>
+      </userTransports>
+      <useBuiltinTransports>false</useBuiltinTransports>
+    </rtps>
+  </participant>
+</profiles>

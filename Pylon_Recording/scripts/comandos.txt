@@ -1,0 +1,7 @@
+#Capturar
+python3 capture_images.py --out ./calib_images --device camt1 --userset UserSet2 --cols 9 --rows 6
+#Calibrar
+python3 calibrate.py --images ./calib_images --cols 9 --rows 6 --square 25.0 --out calibration_basler.yaml --camera-name camt1 --coverage coverage.png
+#Grabar
+python3 record_video.py --out ./calib_images/recording.mp4 --fps 20 --device camt1 --userset UserSet2 --calib calibration_basler.yaml
+

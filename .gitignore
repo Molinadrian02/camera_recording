@@ -1,0 +1,18 @@
+# Vídeos grabados
+*.mp4
+
+# SDK MVS (descargar de Hikrobot)
+Hk_Robot_Driver/humble/mvs-sdk/*
+!Hk_Robot_Driver/humble/mvs-sdk/.gitkeep
+
+# Logs del SDK MVS
+MvSdkLog/
+
+# colcon
+build/
+install/
+log/
+
+# Editor / Python
+.vscode/
+__pycache__/

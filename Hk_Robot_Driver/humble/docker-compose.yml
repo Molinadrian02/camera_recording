@@ -1,0 +1,42 @@
+services:
+  humble:
+    # image: osrf/ros:humble-desktop
+    container_name: humble
+    # tini como PID 1: recoge los procesos zombi de los nodos lanzados con docker exec
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID}
+        USER_NAME: ${USER_NAME}
+        GROUP_ID: ${GROUP_ID}
+        GROUP_NAME: ${GROUP_NAME}
+        WORKSPACE: ${WORKSPACE}
+    network_mode: host # Mandatory for GUI
+    #runtime: nvidia
+    devices:
+      - /dev/dri/
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DISPLAY=$DISPLAY
+      - TERM=xterm-256color
+      # Entorno del SDK MVS. LD_LIBRARY_PATH NO va aqui (rompe Qt de rviz2): lo pone scripts/tools/run_hk.sh
+      # solo para el nodo; sin el, MV_CC_ConvertPixelType falla con MV_E_LOAD_LIBRARY
+      - MVCAM_SDK_PATH=/opt/MVS
+      - MVCAM_COMMON_RUNENV=/opt/MVS/lib
+      - MVCAM_GENICAM_CLPROTOCOL=/opt/MVS/lib/CLProtocol
+      - ALLUSERSPROFILE=/opt/MVS/MVFG
+      # Buffers DDS grandes para /hk_camera/rgb (4.6 MB/msg); sin esto hay huecos de ~0.6 s
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/colcon_ws/scripts/dds/fastdds_large_msgs.xml
+    volumes:
+      - $HOME/.Xauthority:$HOME/.Xauthority:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./colcon_ws:/colcon_ws
+      - ./scripts:/colcon_ws/scripts
+      # Necesario para que el SDK MVS enumere cámaras USB3 Vision (libusb)
+      - /dev/bus/usb:/dev/bus/usb
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null

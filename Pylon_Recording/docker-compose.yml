@@ -1,0 +1,18 @@
+services:
+  calib:
+    container_name: camera_calib
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host  # necesario para que pypylon encuentre la camara GigE
+    environment:
+      - DISPLAY=$DISPLAY
+    volumes:
+      - $HOME/.Xauthority:$HOME/.Xauthority:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./scripts:/work/scripts
+      - ./calib_images:/work/calib_images
+      - ./output:/work/output
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null

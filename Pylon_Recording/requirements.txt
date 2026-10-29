@@ -1,0 +1,4 @@
+pypylon
+opencv-python
+numpy
+pyyaml

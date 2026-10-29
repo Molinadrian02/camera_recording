@@ -1,0 +1,237 @@
+cmake_minimum_required(VERSION 3.5)
+project(hk_camera)
+
+# Las librerías del SDK MVS se resuelven via RPATH en los propios ejecutables,
+# no via LD_LIBRARY_PATH global (eso rompia el Qt de rviz2/rqt_image_view).
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH "/opt/MVS/lib/64")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# 开启编译优化
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(OpenCV 4.2.0 REQUIRED)
+find_package(hk_camera_interfaces REQUIRED) # 添加自定义消息和服务
+
+include_directories(
+  ${OpenCV_INCLUDE_DIRS}
+  include
+  /opt/MVS/include/
+)
+
+LINK_DIRECTORIES(
+/opt/MVS/lib/64/
+)
+
+add_executable(${PROJECT_NAME} src/hk_camera.cpp)
+ament_target_dependencies(${PROJECT_NAME}
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(${PROJECT_NAME}
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+add_executable(hk_camera_compressed_pub src/hk_camera_compressed_pub.cpp)
+ament_target_dependencies(hk_camera_compressed_pub
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_pub
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+add_executable(hk_camera_compressed_sub src/hk_camera_compressed_sub.cpp)
+ament_target_dependencies(hk_camera_compressed_sub
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_sub
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+# 用于测试发布压缩图像
+add_executable(hk_camera_compressed_pub_test src/hk_camera_compressed_pub_test.cpp)
+ament_target_dependencies(hk_camera_compressed_pub_test
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_pub_test
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+add_executable(hk_camera_compressed_pub_test_reliable src/hk_camera_compressed_pub_test_reliable.cpp)
+ament_target_dependencies(hk_camera_compressed_pub_test_reliable
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_pub_test_reliable
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+# 用于测试订阅压缩图像
+add_executable(hk_camera_compressed_sub_test src/hk_camera_compressed_sub_test.cpp)
+ament_target_dependencies(hk_camera_compressed_sub_test
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_sub_test
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+add_executable(hk_camera_compressed_sub_test_reliable src/hk_camera_compressed_sub_test_reliable.cpp)
+ament_target_dependencies(hk_camera_compressed_sub_test_reliable
+  rclcpp
+  std_msgs
+  cv_bridge
+  image_transport
+)
+target_link_libraries(hk_camera_compressed_sub_test_reliable
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+# 服务端
+add_executable(hk_camera_server src/hk_camera_server.cpp)
+ament_target_dependencies(hk_camera_server
+  rclcpp
+  std_msgs
+  sensor_msgs
+  hk_camera_interfaces
+)
+
+target_link_libraries(hk_camera_server
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+# 客户端
+add_executable(hk_camera_client src/hk_camera_client.cpp)
+ament_target_dependencies(hk_camera_client
+  rclcpp
+  std_msgs
+  hk_camera_interfaces
+)
+
+target_link_libraries(hk_camera_client
+  ${OpenCV_LIBRARIES}
+  MvCameraControl
+  MVGigEVisionSDK
+  MVRender
+  MvUsb3vTL
+  MediaProcess
+  X11
+)
+
+install(TARGETS
+  hk_camera
+  hk_camera_compressed_pub
+  hk_camera_compressed_sub
+  hk_camera_compressed_pub_test
+  hk_camera_compressed_sub_test
+  hk_camera_compressed_pub_test_reliable
+  hk_camera_compressed_sub_test_reliable
+
+  hk_camera_server
+  hk_camera_client
+  
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# 安装launch文件
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # uncomment the line when a copyright and license is not present in all source files
+  #set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # uncomment the line when this package is not in a git repo
+  #set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()

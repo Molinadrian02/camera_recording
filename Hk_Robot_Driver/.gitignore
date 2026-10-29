@@ -1,0 +1,8 @@
+# ROS-ROS2 stuff
+build
+install
+log
+devel
+
+# Vscode stuff
+.vscode
